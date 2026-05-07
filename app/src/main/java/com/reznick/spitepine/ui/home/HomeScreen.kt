@@ -11,10 +11,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,10 +28,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +47,9 @@ import com.reznick.spitepine.data.model.Tree
 import com.reznick.spitepine.ui.components.StatusBadge
 import com.reznick.spitepine.ui.theme.SpitePineTheme
 
+private enum class HomeMode { MAP, LIST }
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onAddClick: () -> Unit,
@@ -48,24 +59,61 @@ fun HomeScreen(
     val viewModel: HomeViewModel = viewModel(factory = HomeViewModel.factory(app))
     val trees by viewModel.trees.collectAsStateWithLifecycle()
 
+    var mode by rememberSaveable { mutableStateOf(HomeMode.MAP) }
     var pendingDelete by remember { mutableStateOf<Tree?>(null) }
+
+    // When there are no trees yet, falling back to the list-with-empty-state
+    // gives a friendlier experience than a blank world map.
+    val effectiveMode = if (trees.isEmpty()) HomeMode.LIST else mode
 
     Scaffold(
         modifier = modifier,
+        topBar = {
+            TopAppBar(
+                title = { Text("SpitePine") },
+                actions = {
+                    if (trees.isNotEmpty()) {
+                        FilledTonalButton(
+                            onClick = {
+                                mode = if (mode == HomeMode.MAP) HomeMode.LIST else HomeMode.MAP
+                            },
+                            modifier = Modifier.padding(end = 12.dp),
+                        ) {
+                            if (mode == HomeMode.MAP) {
+                                Icon(Icons.AutoMirrored.Filled.List, contentDescription = null)
+                                Spacer(Modifier.width(8.dp))
+                                Text("List")
+                            } else {
+                                Icon(Icons.Default.Place, contentDescription = null)
+                                Spacer(Modifier.width(8.dp))
+                                Text("Map")
+                            }
+                        }
+                    }
+                },
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddClick) {
                 Icon(Icons.Default.Add, contentDescription = "Add tree")
             }
         },
     ) { padding ->
-        if (trees.isEmpty()) {
-            HomeEmpty(padding)
-        } else {
-            HomeList(
-                trees = trees,
-                padding = padding,
-                onDeleteClick = { pendingDelete = it },
-            )
+        when (effectiveMode) {
+            HomeMode.LIST -> {
+                if (trees.isEmpty()) {
+                    HomeEmpty(padding)
+                } else {
+                    HomeList(
+                        trees = trees,
+                        padding = padding,
+                        onDeleteClick = { pendingDelete = it },
+                    )
+                }
+            }
+            HomeMode.MAP -> {
+                TreeMapView(trees = trees, padding = padding)
+            }
         }
     }
 
