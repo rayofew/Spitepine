@@ -25,6 +25,7 @@ import com.reznick.spitepine.util.LocationHelper
 fun TreeMapView(
     trees: List<Tree>,
     padding: PaddingValues,
+    onTreeClick: (Tree) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -65,6 +66,7 @@ fun TreeMapView(
                 title = tree.address.ifBlank { "Tree ${tree.id.takeLast(6)}" },
                 snippet = tree.status.label(),
                 icon = BitmapDescriptorFactory.defaultMarker(tree.status.markerHue()),
+                onInfoWindowClick = { onTreeClick(tree) },
             )
         }
     }

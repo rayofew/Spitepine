@@ -27,15 +27,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.reznick.spitepine.ui.auth.AuthViewModel
 import com.reznick.spitepine.ui.auth.SignInScreen
 import com.reznick.spitepine.ui.home.HomeScreen
 import com.reznick.spitepine.ui.settings.SettingsScreen
 import com.reznick.spitepine.ui.theme.SpitePineTheme
 import com.reznick.spitepine.ui.tree.AddTreeScreen
+import com.reznick.spitepine.ui.tree.TreeDetailScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,7 +101,10 @@ private fun HomeNavGraph() {
     val nav = rememberNavController()
     NavHost(navController = nav, startDestination = HomeRoute) {
         composable(HomeRoute) {
-            HomeScreen(onAddClick = { nav.navigate(AddTreeRoute) })
+            HomeScreen(
+                onAddClick = { nav.navigate(AddTreeRoute) },
+                onTreeClick = { tree -> nav.navigate("$TreeDetailPrefix${tree.id}") },
+            )
         }
         composable(AddTreeRoute) {
             AddTreeScreen(
@@ -106,11 +112,22 @@ private fun HomeNavGraph() {
                 onCancel = { nav.popBackStack() },
             )
         }
+        composable(
+            route = "$TreeDetailPrefix{treeId}",
+            arguments = listOf(navArgument("treeId") { type = NavType.StringType }),
+        ) { backStackEntry ->
+            val treeId = backStackEntry.arguments?.getString("treeId").orEmpty()
+            TreeDetailScreen(
+                treeId = treeId,
+                onBack = { nav.popBackStack() },
+            )
+        }
     }
 }
 
 private const val HomeRoute = "home"
 private const val AddTreeRoute = "tree/add"
+private const val TreeDetailPrefix = "tree/"
 
 enum class AppDestinations(
     val label: String,

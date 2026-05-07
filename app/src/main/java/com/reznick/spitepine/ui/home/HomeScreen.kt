@@ -53,6 +53,7 @@ private enum class HomeMode { MAP, LIST }
 @Composable
 fun HomeScreen(
     onAddClick: () -> Unit,
+    onTreeClick: (Tree) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val app = LocalContext.current.app
@@ -108,11 +109,16 @@ fun HomeScreen(
                         trees = trees,
                         padding = padding,
                         onDeleteClick = { pendingDelete = it },
+                        onTreeClick = onTreeClick,
                     )
                 }
             }
             HomeMode.MAP -> {
-                TreeMapView(trees = trees, padding = padding)
+                TreeMapView(
+                    trees = trees,
+                    padding = padding,
+                    onTreeClick = onTreeClick,
+                )
             }
         }
     }
@@ -181,6 +187,7 @@ private fun HomeList(
     trees: List<Tree>,
     padding: PaddingValues,
     onDeleteClick: (Tree) -> Unit,
+    onTreeClick: (Tree) -> Unit,
 ) {
     LazyColumn(
         contentPadding = PaddingValues(
@@ -192,14 +199,18 @@ private fun HomeList(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(trees, key = { it.id }) { tree ->
-            TreeCard(tree = tree, onDeleteClick = { onDeleteClick(tree) })
+            TreeCard(
+                tree = tree,
+                onDeleteClick = { onDeleteClick(tree) },
+                onClick = { onTreeClick(tree) },
+            )
         }
     }
 }
 
 @Composable
-private fun TreeCard(tree: Tree, onDeleteClick: () -> Unit) {
-    Card {
+private fun TreeCard(tree: Tree, onDeleteClick: () -> Unit, onClick: () -> Unit) {
+    Card(onClick = onClick) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
