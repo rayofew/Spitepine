@@ -15,7 +15,6 @@ import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
@@ -27,7 +26,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.reznick.spitepine.ui.home.HomeScreen
 import com.reznick.spitepine.ui.theme.SpitePineTheme
+import com.reznick.spitepine.ui.tree.AddTreeScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,14 +61,33 @@ fun SpitePineRoot() {
             }
         }
     ) {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            DestinationStub(
-                destination = currentDestination,
-                modifier = Modifier.padding(innerPadding)
+        when (currentDestination) {
+            AppDestinations.HOME -> HomeNavGraph()
+            AppDestinations.REMINDERS -> DestinationStub(AppDestinations.REMINDERS)
+            AppDestinations.ROUTES -> DestinationStub(AppDestinations.ROUTES)
+            AppDestinations.SETTINGS -> DestinationStub(AppDestinations.SETTINGS)
+        }
+    }
+}
+
+@Composable
+private fun HomeNavGraph() {
+    val nav = rememberNavController()
+    NavHost(navController = nav, startDestination = HomeRoute) {
+        composable(HomeRoute) {
+            HomeScreen(onAddClick = { nav.navigate(AddTreeRoute) })
+        }
+        composable(AddTreeRoute) {
+            AddTreeScreen(
+                onSaved = { nav.popBackStack() },
+                onCancel = { nav.popBackStack() },
             )
         }
     }
 }
+
+private const val HomeRoute = "home"
+private const val AddTreeRoute = "tree/add"
 
 enum class AppDestinations(
     val label: String,
