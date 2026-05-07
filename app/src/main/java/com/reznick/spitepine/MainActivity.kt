@@ -38,6 +38,7 @@ import com.reznick.spitepine.ui.home.HomeScreen
 import com.reznick.spitepine.ui.settings.SettingsScreen
 import com.reznick.spitepine.ui.theme.SpitePineTheme
 import com.reznick.spitepine.ui.tree.AddTreeScreen
+import com.reznick.spitepine.ui.tree.EditTreeScreen
 import com.reznick.spitepine.ui.tree.TreeDetailScreen
 
 class MainActivity : ComponentActivity() {
@@ -120,6 +121,18 @@ private fun HomeNavGraph() {
             TreeDetailScreen(
                 treeId = treeId,
                 onBack = { nav.popBackStack() },
+                onEdit = { nav.navigate("$TreeDetailPrefix$treeId/edit") },
+            )
+        }
+        composable(
+            route = "$TreeDetailPrefix{treeId}/edit",
+            arguments = listOf(navArgument("treeId") { type = NavType.StringType }),
+        ) { backStackEntry ->
+            val treeId = backStackEntry.arguments?.getString("treeId").orEmpty()
+            EditTreeScreen(
+                treeId = treeId,
+                onSaved = { nav.popBackStack() },
+                onCancel = { nav.popBackStack() },
             )
         }
     }
