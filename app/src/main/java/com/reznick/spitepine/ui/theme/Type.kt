@@ -1,4 +1,4 @@
-package com.example.spitepine.ui.theme
+package com.reznick.spitepine.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

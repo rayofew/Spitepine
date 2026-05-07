@@ -1,4 +1,4 @@
-package com.example.spitepine
+package com.reznick.spitepine
 
 import org.junit.Test
 

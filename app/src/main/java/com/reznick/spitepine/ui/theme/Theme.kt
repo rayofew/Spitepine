@@ -1,4 +1,4 @@
-package com.example.spitepine.ui.theme
+package com.reznick.spitepine.ui.theme
 
 import android.app.Activity
 import android.os.Build
