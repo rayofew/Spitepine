@@ -1,0 +1,27 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Claude Code per-machine settings (per-user permission allowlist)
+.claude/settings.local.json
+
+# Android signing material — never commit
+*.keystore
+*.jks
+keystore.properties
+
+# Firebase config — added after manual Firebase setup; keep out of public history.
+# If you decide to commit this on a private repo, just remove this line.
+app/google-services.json
