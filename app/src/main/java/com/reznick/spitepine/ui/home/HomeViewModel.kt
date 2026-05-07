@@ -10,10 +10,15 @@ import com.reznick.spitepine.data.repository.TreeRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
-class HomeViewModel(repo: TreeRepository) : ViewModel() {
+class HomeViewModel(private val repo: TreeRepository) : ViewModel() {
     val trees: StateFlow<List<Tree>> = repo.observeTrees()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    fun delete(treeId: String) {
+        viewModelScope.launch { repo.softDelete(treeId) }
+    }
 
     companion object {
         fun factory(app: SpitePineApp) = viewModelFactory {
