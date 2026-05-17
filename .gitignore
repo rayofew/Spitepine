@@ -26,3 +26,4 @@ keystore.properties
 # If you decide to commit this on a private repo, just remove this line.
 app/google-services.json
 SpiteCards/.git
+SpiteScore/.git
