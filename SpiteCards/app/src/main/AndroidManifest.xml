@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Nearby Connections (Bluetooth + Wi-Fi Direct, no INTERNET needed) -->
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" android:usesPermissionFlags="neverForLocation" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <!-- Location required for Bluetooth scanning on Android 11 and below -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:maxSdkVersion="31" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:maxSdkVersion="31" />
+
+    <!-- Camera requested only at QR scan time, not at launch -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Intentionally no android.permission.INTERNET — gameplay is local-only -->
+
+    <!-- Detect SpiteScore installation (Android 11+ package visibility) -->
+    <queries>
+        <package android:name="com.reznick.spitescore" />
+    </queries>
+
+    <application
+        android:name=".SpiteCardsApp"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SpiteCards">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Entry point for incoming game-setup intents from SpiteScore -->
+        <activity
+            android:name=".integration.spitescore.ReceiveGameSetupActivity"
+            android:exported="true"
+            android:taskAffinity="com.reznick.spitecards.integration">
+            <intent-filter>
+                <action android:name="com.reznick.spite.action.START_GAME_SESSION" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/vnd.spite.gamesetup+json" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>
